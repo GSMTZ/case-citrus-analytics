@@ -95,6 +95,32 @@ for uf in ufs:
         for item in dados:
 
             # =============================================
+            # TRATAMENTO DE POSSÍVEIS VALORES NULOS
+            # RETORNADOS PELA API DO IBGE
+            # =============================================
+
+            if item.get('microrregiao'):
+
+                mesorregiao = (
+                    item['microrregiao']
+                        ['mesorregiao']
+                        ['nome']
+                )
+
+                regiao_brasil = (
+                    item['microrregiao']
+                        ['mesorregiao']
+                        ['UF']
+                        ['regiao']
+                        ['nome']
+                )
+
+            else:
+
+                mesorregiao = None
+                regiao_brasil = None
+
+            # =============================================
             # ESTRUTURAÇÃO E PADRONIZAÇÃO DOS DADOS
             # =============================================
 
@@ -103,8 +129,7 @@ for uf in ufs:
                 # Código IBGE oficial do município
                 'cod_municipio_ibge': item['id'],
 
-                # Nome do município padronizado
-                # utilizando Title Case
+                # Nome padronizado do município
                 'nome_municipio': (
                     item['nome']
                     .strip()
@@ -114,21 +139,11 @@ for uf in ufs:
                 # UF consultada
                 'uf': uf,
 
-                # Nome da mesorregião
-                'mesorregiao': (
-                    item['microrregiao']
-                        ['mesorregiao']
-                        ['nome']
-                ),
+                # Mesorregião tratada
+                'mesorregiao': mesorregiao,
 
-                # Região do Brasil
-                'regiao_brasil': (
-                    item['microrregiao']
-                        ['mesorregiao']
-                        ['UF']
-                        ['regiao']
-                        ['nome']
-                )
+                # Região do Brasil tratada
+                'regiao_brasil': regiao_brasil
             }
 
             # =============================================
