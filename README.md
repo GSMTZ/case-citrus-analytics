@@ -23,6 +23,7 @@ case-citrus-analytics/
 ├── data/
 │   ├── producao_citros_bruto.csv
 │   ├── dim_municipio.csv
+│   ├── producao_citros_bruto_original.csv
 │   └── fato_producao.csv
 │
 ├── extraction/
@@ -34,9 +35,7 @@ case-citrus-analytics/
 │   ├── 02_create_fato_producao.sql
 │   ├── 03_insert_dim_municipio.sql
 │   ├── 04_insert_fato_producao.sql
-│   ├── 05_create_staging_tables.sql
-│   ├── 06_drop_staging_tables.sql
-│   └── queries_analiticas.sql
+│   └── case_citrus.db
 │
 ├── notebooks/
 │   └── 01_eda_limpeza.ipynb
@@ -45,7 +44,6 @@ case-citrus-analytics/
 │
 ├── docs/
 │
-├── case_citrus.db
 │
 └── README.md
 ```
