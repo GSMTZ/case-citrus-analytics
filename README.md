@@ -21,12 +21,13 @@ O projeto contempla:
 case-citrus-analytics/
 │
 ├── data/
+│   ├── producao_citros_bruto_original.csv
 │   ├── producao_citros_bruto.csv
 │   ├── dim_municipio.csv
-│   ├── producao_citros_bruto_original.csv
 │   └── fato_producao.csv
 │
 ├── extraction/
+│   ├── transform_fato_producao.py
 │   ├── extract_ibge.py
 │   └── load_sqlite.py
 │
@@ -47,6 +48,127 @@ case-citrus-analytics/
 │
 └── README.md
 ```
+---
+
+# Arquitetura do Pipeline
+
+O projeto foi estruturado em camadas independentes para separar responsabilidades e facilitar manutenção, rastreabilidade e escalabilidade do pipeline analítico.
+
+---
+
+## Camada de Dados (`/data`)
+
+Responsável por armazenar:
+
+- base original recebida no case
+- bases tratadas
+- dimensão geográfica
+- tabela fato final
+
+### Arquivos
+
+| Arquivo | Descrição |
+|---|---|
+| producao_citros_bruto_original.csv | Base original sem alterações |
+| producao_citros_bruto.csv | Base utilizada no processo analítico |
+| dim_municipio.csv | Dimensão geográfica enriquecida via API do IBGE |
+| fato_producao.csv | Tabela fato final utilizada no modelo analítico |
+
+---
+
+## Camada de Transformação (`/extraction`)
+
+Responsável pelos processos de ETL e automação do pipeline.
+
+Cada script possui uma responsabilidade específica.
+
+---
+
+### `transform_fato_producao.py`
+
+Responsável por:
+
+- leitura do CSV bruto
+- análise inicial dos dados
+- tratamento de inconsistências
+- conversão de tipos numéricos
+- remoção de registros inválidos
+- criação da métrica de produtividade
+- geração da tabela `fato_producao.csv`
+
+---
+
+### `extract_ibge.py`
+
+Responsável por:
+
+- consumo da API pública do IBGE
+- extração dos municípios brasileiros
+- obtenção de:
+  - código IBGE
+  - estado
+  - mesorregião
+  - região do Brasil
+- tratamento de possíveis valores nulos da API
+- geração da dimensão `dim_municipio.csv`
+
+---
+
+### `load_sqlite.py`
+
+Responsável por:
+
+- conexão com banco SQLite
+- leitura das tabelas tratadas
+- persistência das tabelas analíticas
+- carga final no banco relacional
+
+---
+
+## Camada Analítica (`/notebooks`)
+
+Responsável pela análise exploratória dos dados (EDA).
+
+---
+
+### `01_eda_limpeza.ipynb`
+
+Notebook utilizado para:
+
+- exploração inicial do dataset
+- validação de qualidade dos dados
+- identificação de inconsistências
+- documentação do processo analítico
+- testes e validações das transformações
+
+O notebook foi mantido separado dos scripts produtivos para diferenciar:
+
+- análise exploratória
+- pipeline operacional
+
+---
+
+## Camada SQL (`/sql`)
+
+Responsável pela modelagem relacional e documentação das estruturas analíticas.
+
+### Scripts SQL
+
+| Arquivo | Objetivo |
+|---|---|
+| 01_create_dim_municipio.sql | Criação da dimensão geográfica |
+| 02_create_fato_producao.sql | Criação da tabela fato |
+| 03_insert_dim_municipio.sql | Documentação da lógica de carga da dimensão |
+| 04_insert_fato_producao.sql | Documentação da lógica de carga da fato |
+
+---
+
+## Camada de Persistência (`SQLite`)
+
+Banco utilizado:
+
+```txt
+case_citrus.db
 
 ---
 
