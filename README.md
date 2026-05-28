@@ -2,16 +2,23 @@
 
 ## Objetivo do Projeto
 
-Este projeto foi desenvolvido como solução para o case técnico da vaga de Analista de Business Intelligence. O objetivo principal foi construir um pipeline analítico completo para análise da produção de citros no Brasil, utilizando dados públicos do IBGE e técnicas de ETL, modelagem dimensional e visualização de dados.
+Este projeto foi desenvolvido como solução para o case técnico da vaga de Analista de Business Intelligence.
+
+O objetivo principal foi construir um pipeline analítico completo para análise da produção de citros no Brasil, utilizando dados públicos do IBGE e técnicas de:
+
+* ETL
+* modelagem dimensional
+* persistência relacional
+* preparação para visualização analítica
 
 O projeto contempla:
 
-- Extração e limpeza de dados
-- Integração com API pública do IBGE
-- Tratamento de inconsistências
-- Modelagem dimensional (fato e dimensão)
-- Persistência em banco SQLite
-- Preparação para consumo no Power BI
+* extração e limpeza de dados
+* integração com API pública do IBGE
+* tratamento de inconsistências
+* modelagem dimensional (fato e dimensão)
+* persistência em banco SQLite
+* preparação para consumo no Power BI
 
 ---
 
@@ -45,14 +52,19 @@ case-citrus-analytics/
 │
 ├── docs/
 │
-│
 └── README.md
 ```
+
 ---
 
 # Arquitetura do Pipeline
 
-O projeto foi estruturado em camadas independentes para separar responsabilidades e facilitar manutenção, rastreabilidade e escalabilidade do pipeline analítico.
+O projeto foi estruturado em camadas independentes para separar responsabilidades e facilitar:
+
+* manutenção
+* rastreabilidade
+* escalabilidade
+* organização do pipeline analítico
 
 ---
 
@@ -60,19 +72,19 @@ O projeto foi estruturado em camadas independentes para separar responsabilidade
 
 Responsável por armazenar:
 
-- base original recebida no case
-- bases tratadas
-- dimensão geográfica
-- tabela fato final
+* base original recebida no case
+* bases tratadas
+* dimensão geográfica
+* tabela fato final
 
 ### Arquivos
 
-| Arquivo | Descrição |
-|---|---|
-| producao_citros_bruto_original.csv | Base original sem alterações |
-| producao_citros_bruto.csv | Base utilizada no processo analítico |
-| dim_municipio.csv | Dimensão geográfica enriquecida via API do IBGE |
-| fato_producao.csv | Tabela fato final utilizada no modelo analítico |
+| Arquivo                            | Descrição                                       |
+| ---------------------------------- | ----------------------------------------------- |
+| producao_citros_bruto_original.csv | Base original sem alterações                    |
+| producao_citros_bruto.csv          | Base utilizada no processo analítico            |
+| dim_municipio.csv                  | Dimensão geográfica enriquecida via API do IBGE |
+| fato_producao.csv                  | Tabela fato final utilizada no modelo analítico |
 
 ---
 
@@ -88,13 +100,13 @@ Cada script possui uma responsabilidade específica.
 
 Responsável por:
 
-- leitura do CSV bruto
-- análise inicial dos dados
-- tratamento de inconsistências
-- conversão de tipos numéricos
-- remoção de registros inválidos
-- criação da métrica de produtividade
-- geração da tabela `fato_producao.csv`
+* leitura do CSV bruto
+* análise inicial dos dados
+* tratamento de inconsistências
+* conversão de tipos numéricos
+* remoção de registros inválidos
+* criação da métrica de produtividade
+* geração da tabela `fato_producao.csv`
 
 ---
 
@@ -102,15 +114,15 @@ Responsável por:
 
 Responsável por:
 
-- consumo da API pública do IBGE
-- extração dos municípios brasileiros
-- obtenção de:
-  - código IBGE
-  - estado
-  - mesorregião
-  - região do Brasil
-- tratamento de possíveis valores nulos da API
-- geração da dimensão `dim_municipio.csv`
+* consumo da API pública do IBGE
+* extração dos municípios brasileiros
+* obtenção de:
+  * código IBGE
+  * estado
+  * mesorregião
+  * região do Brasil
+* tratamento de possíveis valores nulos da API
+* geração da dimensão `dim_municipio.csv`
 
 ---
 
@@ -118,10 +130,10 @@ Responsável por:
 
 Responsável por:
 
-- conexão com banco SQLite
-- leitura das tabelas tratadas
-- persistência das tabelas analíticas
-- carga final no banco relacional
+* conexão com banco SQLite
+* leitura das tabelas tratadas
+* persistência das tabelas analíticas
+* carga final no banco relacional
 
 ---
 
@@ -135,16 +147,16 @@ Responsável pela análise exploratória dos dados (EDA).
 
 Notebook utilizado para:
 
-- exploração inicial do dataset
-- validação de qualidade dos dados
-- identificação de inconsistências
-- documentação do processo analítico
-- testes e validações das transformações
+* exploração inicial do dataset
+* validação de qualidade dos dados
+* identificação de inconsistências
+* documentação do processo analítico
+* testes e validações das transformações
 
 O notebook foi mantido separado dos scripts produtivos para diferenciar:
 
-- análise exploratória
-- pipeline operacional
+* análise exploratória
+* pipeline operacional
 
 ---
 
@@ -154,12 +166,12 @@ Responsável pela modelagem relacional e documentação das estruturas analític
 
 ### Scripts SQL
 
-| Arquivo | Objetivo |
-|---|---|
-| 01_create_dim_municipio.sql | Criação da dimensão geográfica |
-| 02_create_fato_producao.sql | Criação da tabela fato |
+| Arquivo                     | Objetivo                                    |
+| --------------------------- | ------------------------------------------- |
+| 01_create_dim_municipio.sql | Criação da dimensão geográfica              |
+| 02_create_fato_producao.sql | Criação da tabela fato                      |
 | 03_insert_dim_municipio.sql | Documentação da lógica de carga da dimensão |
-| 04_insert_fato_producao.sql | Documentação da lógica de carga da fato |
+| 04_insert_fato_producao.sql | Documentação da lógica de carga da fato     |
 
 ---
 
@@ -169,70 +181,96 @@ Banco utilizado:
 
 ```txt
 case_citrus.db
+```
+
+Objetivo:
+
+* armazenar o modelo dimensional
+* persistir os dados tratados
+* permitir consultas SQL analíticas
+* servir como fonte para o Power BI
+
+---
+
+# Fluxo do Pipeline
+
+```txt
+CSV Original
+    ↓
+Transformação e Limpeza
+    ↓
+Criação da Tabela Fato
+    ↓
+Integração com API IBGE
+    ↓
+Criação da Dimensão Município
+    ↓
+Persistência no SQLite
+    ↓
+Consumo no Power BI
+```
 
 ---
 
 # 1. Análise Exploratória do CSV
 
-A primeira etapa do projeto consistiu na análise exploratória do arquivo `producao_citros_bruto.csv`.
+A primeira etapa do projeto consistiu na análise exploratória do arquivo:
+
+```txt
+producao_citros_bruto.csv
+```
 
 Foram realizadas validações para identificar:
 
-- Estrutura do dataset
-- Tipos de dados
-- Valores nulos
-- Valores inválidos
-- Inconsistências nos nomes dos municípios
-- Problemas de qualidade dos dados
+* estrutura do dataset
+* tipos de dados
+* valores nulos
+* valores inválidos
+* inconsistências nos nomes dos municípios
+* problemas de qualidade dos dados
 
 Durante a análise foram identificados os seguintes problemas:
 
-| Problema | Identificado |
-|---|---|
-| Valores `-` em colunas numéricas | Sim |
-| Valores nulos | Sim |
-| Municípios com capitalização inconsistente | Sim |
-| Colunas numéricas importadas como texto | Sim |
-| Registros inválidos com área igual a zero | Sim |
+| Problema                                   |
+| ------------------------------------------ |
+| Valores `-` em colunas numéricas           |
+| Valores nulos                              |
+| Municípios com capitalização inconsistente |
+| Colunas numéricas importadas como texto    |
+| Registros inválidos com área igual a zero  |
 
 ---
 
 # 2. Limpeza e Tratamento dos Dados
 
-Após a análise inicial, foi realizado o processo de limpeza dos dados utilizando Python e Pandas.
+Após a análise inicial, foi realizado o processo de limpeza utilizando Python e Pandas.
 
 ## Principais tratamentos aplicados
 
 ### Padronização de municípios
 
-Os nomes dos municípios foram padronizados utilizando:
+Padronização utilizando:
 
 ```python
 .str.strip().str.title()
 ```
 
 Objetivo:
-- eliminar diferenças de capitalização
-- facilitar integração com a API do IBGE
 
-Exemplo:
-
-| Original | Tratado |
-|---|---|
-| ARARAQUARA | Araraquara |
-| araraquara | Araraquara |
+* eliminar inconsistências de capitalização
+* facilitar futuras integrações
 
 ---
 
 ### Tratamento de valores inválidos
 
-Os valores representados por:
+Conversão de valores:
 
 ```txt
 -
 ```
 
-foram convertidos para:
+para:
 
 ```python
 NaN
@@ -248,36 +286,36 @@ df.replace('-', np.nan)
 
 ### Conversão de tipos numéricos
 
-As colunas numéricas foram convertidas utilizando:
+Conversão utilizando:
 
 ```python
 pd.to_numeric(errors='coerce')
 ```
 
 Objetivo:
-- garantir consistência para cálculos
-- permitir criação de métricas analíticas
+
+* garantir consistência nos cálculos
+* permitir criação de métricas analíticas
 
 ---
 
 ### Remoção de registros inválidos
 
-Conforme solicitado no case, registros com:
+Foram removidos registros com:
 
-- `area_colhida_ha <= 0`
-- `qtd_produzida_ton <= 0`
-
-foram removidos.
+* `area_colhida_ha <= 0`
+* `qtd_produzida_ton <= 0`
 
 Resultado:
 
-| Situação | Quantidade |
-|---|---|
-| Registros originais | 3600 |
-| Registros válidos finais | 3234 |
+| Situação                 | Quantidade |
+| ------------------------ | ---------- |
+| Registros originais      | 3600       |
+| Registros válidos finais | 3234       |
 
 Total removido:
-- 366 registros inválidos
+
+* 366 registros inválidos
 
 ---
 
@@ -295,13 +333,11 @@ utilizando:
 qtd_produzida_ton / area_colhida_ha
 ```
 
-Essa métrica será utilizada posteriormente no dashboard analítico.
-
 ---
 
 # 3. Integração com API do IBGE
 
-Para enriquecer os dados com informações geográficas e regionais, foi utilizada a API pública de localidades do IBGE.
+Foi utilizada a API pública do IBGE para enriquecimento geográfico da dimensão de municípios.
 
 Endpoint utilizado:
 
@@ -309,44 +345,19 @@ Endpoint utilizado:
 https://servicodados.ibge.gov.br/api/v1/localidades/estados/{UF}/municipios
 ```
 
----
+Informações obtidas:
 
-## Informações extraídas da API
+* código IBGE
+* estado
+* mesorregião
+* região do Brasil
 
-Para cada município foram obtidos:
+Resultado:
 
-- Código IBGE do município
-- Nome do município
-- Mesorregião
-- Região do Brasil
-
----
-
-## Estratégia de extração
-
-Foi desenvolvido o script:
-
-```txt
-extract_ibge.py
-```
-
-Responsável por:
-
-- consumir a API para todas as UFs brasileiras
-- consolidar os dados
-- tratar possíveis retornos nulos
-- gerar o arquivo `dim_municipio.csv`
-
----
-
-## Resultado da integração
-
-A dimensão final gerada possui:
-
-| Informação | Quantidade |
-|---|---|
-| Municípios carregados | 5571 |
-| Registros duplicados | 0 |
+| Informação            | Quantidade |
+| --------------------- | ---------- |
+| Municípios carregados | 5571       |
+| Registros duplicados  | 0          |
 
 ---
 
@@ -354,8 +365,8 @@ A dimensão final gerada possui:
 
 Após o tratamento dos dados, foi construída uma modelagem dimensional composta por:
 
-- Tabela Fato
-- Tabela Dimensão
+* tabela fato
+* tabela dimensão
 
 ---
 
@@ -365,17 +376,18 @@ Tabela responsável por armazenar os dados geográficos dos municípios brasilei
 
 ## Estrutura
 
-| Campo | Descrição |
-|---|---|
+| Campo              | Descrição                   |
+| ------------------ | --------------------------- |
 | cod_municipio_ibge | Código oficial do município |
-| nome_municipio | Nome padronizado |
-| uf | Sigla do estado |
-| estado | Nome do estado |
-| mesorregiao | Mesorregião IBGE |
-| regiao_brasil | Região do Brasil |
+| nome_municipio     | Nome padronizado            |
+| uf                 | Sigla do estado             |
+| estado             | Nome do estado              |
+| mesorregiao        | Mesorregião IBGE            |
+| regiao_brasil      | Região do Brasil            |
 
 Granularidade:
-- uma linha por município
+
+* uma linha por município
 
 ---
 
@@ -385,83 +397,52 @@ Tabela responsável por armazenar os indicadores de produção agrícola.
 
 ## Estrutura
 
-| Campo | Descrição |
-|---|---|
-| cod_municipio_ibge | Chave do município |
-| cod_produto | Código do produto |
-| ano | Ano de referência |
-| qtd_produzida_ton | Produção em toneladas |
-| area_colhida_ha | Área colhida |
-| valor_producao_reais | Valor da produção |
-| produtividade_ton_ha | Métrica derivada |
+| Campo                | Descrição             |
+| -------------------- | --------------------- |
+| cod_municipio_ibge   | Chave do município    |
+| cod_produto          | Código do produto     |
+| ano                  | Ano de referência     |
+| qtd_produzida_ton    | Produção em toneladas |
+| area_colhida_ha      | Área colhida          |
+| valor_producao_reais | Valor da produção     |
+| produtividade_ton_ha | Métrica derivada      |
 
 Granularidade:
-- uma linha por município + produto + ano
+
+* uma linha por município + produto + ano
 
 ---
 
-# 5. Banco de Dados SQLite
+# 5. Tecnologias Utilizadas
 
-Foi utilizado SQLite como banco relacional local para persistência das tabelas analíticas.
-
-Banco criado:
-
-```txt
-case_citrus.db
-```
-
----
-
-## Tabelas criadas
-
-| Tabela | Tipo |
-|---|---|
-| dim_municipio | Dimensão |
-| fato_producao | Fato |
+| Tecnologia | Finalidade                |
+| ---------- | ------------------------- |
+| Python     | ETL e tratamento de dados |
+| Pandas     | Manipulação de dados      |
+| Requests   | Consumo da API            |
+| SQLite     | Persistência relacional   |
+| SQL        | Modelagem e consultas     |
+| Power BI   | Dashboard analítico       |
 
 ---
 
-# 6. Automação da Carga
+# 6. Resultado Final
 
-A carga dos dados foi automatizada utilizando Python.
+O projeto resultou em uma solução analítica ponta a ponta contendo:
 
-Script utilizado:
+* pipeline ETL automatizado
+* tratamento e padronização de dados
+* integração com API pública
+* modelagem dimensional
+* persistência em banco relacional
+* estrutura pronta para consumo analítico no Power BI
 
-```txt
-load_sqlite.py
-```
+A solução foi desenvolvida seguindo separação de responsabilidades entre:
 
-Responsável por:
+* exploração analítica
+* transformação de dados
+* modelagem SQL
+* persistência
+* visualização
 
-- conectar ao SQLite
-- carregar os CSVs tratados
-- inserir dados nas tabelas finais
-- validar quantidade de registros
-
----
-
-# 7. Tecnologias Utilizadas
-
-| Tecnologia | Finalidade |
-|---|---|
-| Python | ETL e tratamento de dados |
-| Pandas | Manipulação de dados |
-| Requests | Consumo da API |
-| SQLite | Persistência relacional |
-| SQL | Modelagem e consultas |
-| Power BI | Dashboard analítico |
-
----
-
-# 8. Resultado Final
-
-O projeto resultou em um pipeline analítico completo contendo:
-
-- ingestão de dados
-- limpeza
-- enriquecimento geográfico
-- modelagem dimensional
-- persistência em banco
-- preparação para visualização executiva no Power BI
-
-O objetivo principal foi construir uma solução analítica estruturada, reproduzível e preparada para tomada de decisão.
+O objetivo principal foi construir uma arquitetura analítica organizada, reproduzível e preparada para tomada de decisão.
