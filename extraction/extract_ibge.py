@@ -6,6 +6,8 @@
 # Consumir a API pública do IBGE para obter:
 # - Código IBGE do município
 # - Nome do município
+# - UF
+# - Estado
 # - Mesorregião
 # - Região do Brasil
 #
@@ -26,6 +28,16 @@ import requests
 
 # Biblioteca utilizada para criar pausas entre requisições
 import time
+
+# Biblioteca para trabalhar com caminhos
+from pathlib import Path
+
+
+# =========================================================
+# CONFIGURAÇÕES
+# =========================================================
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # =========================================================
@@ -101,6 +113,13 @@ for uf in ufs:
 
             if item.get('microrregiao'):
 
+                estado = (
+                    item['microrregiao']
+                        ['mesorregiao']
+                        ['UF']
+                        ['nome']
+                )
+
                 mesorregiao = (
                     item['microrregiao']
                         ['mesorregiao']
@@ -117,6 +136,7 @@ for uf in ufs:
 
             else:
 
+                estado = None
                 mesorregiao = None
                 regiao_brasil = None
 
@@ -138,6 +158,9 @@ for uf in ufs:
 
                 # UF consultada
                 'uf': uf,
+
+                # Nome completo do estado
+                'estado': estado,
 
                 # Mesorregião tratada
                 'mesorregiao': mesorregiao,
@@ -208,7 +231,7 @@ print(f'\nQuantidade de registros duplicados: {duplicados}')
 # =========================================================
 
 df_municipios.to_csv(
-    '../data/dim_municipio.csv',
+    BASE_DIR / 'data' / 'dim_municipio.csv',
     index=False
 )
 
