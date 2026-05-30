@@ -198,6 +198,73 @@ for uf in ufs:
 
 df_municipios = pd.DataFrame(lista_municipios)
 
+# =========================================================
+# IDENTIFICA MUNICÍPIOS COM DADOS GEOGRÁFICOS AUSENTES
+# =========================================================
+
+municipios_sem_regiao = df_municipios[
+    df_municipios["estado"].isna()
+].copy()
+
+print(
+    f"\nMunicípios sem dados geográficos: "
+    f"{municipios_sem_regiao.shape[0]}"
+)
+
+if len(municipios_sem_regiao) > 0:
+
+    municipios_sem_regiao.to_csv(
+        BASE_DIR / "data" / "LOGs" / "municipios_sem_regiao.csv",
+        index=False
+    )
+
+    print(
+        "Log salvo em: "
+        "logs/municipios_sem_regiao.csv"
+    )
+
+# =========================================================
+# CORREÇÃO MANUAL DE INCONSISTÊNCIAS
+# IDENTIFICADAS DURANTE A VALIDAÇÃO
+# =========================================================
+
+correcoes = []
+
+mask = (
+    df_municipios["cod_municipio_ibge"]
+    == 5101837
+)
+
+if mask.sum() > 0:
+
+    df_municipios.loc[
+        mask,
+        "estado"
+    ] = "Mato Grosso"
+
+    df_municipios.loc[
+        mask,
+        "regiao_brasil"
+    ] = "Centro-Oeste"
+
+    df_municipios.loc[
+        mask,
+        "mesorregiao"
+    ] = "Norte Mato-Grossense"
+
+    correcoes.append({
+
+        "cod_municipio_ibge": 5101837,
+
+        "nome_municipio":
+            "Boa Esperanca Do Norte",
+
+        "campo_corrigido":
+            "estado|mesorregiao|regiao_brasil",
+
+        "valor_aplicado":
+            "Mato Grosso|Norte Mato-Grossense|Centro-Oeste"
+    })
 
 # =========================================================
 # VALIDAÇÃO INICIAL DOS DADOS COLETADOS
@@ -225,6 +292,21 @@ duplicados = df_municipios.duplicated().sum()
 
 print(f'\nQuantidade de registros duplicados: {duplicados}')
 
+# =========================================================
+# EXPORTAÇÃO DO LOG DE CORREÇÕES
+# =========================================================
+
+if len(correcoes) > 0:
+
+    pd.DataFrame(correcoes).to_csv(
+        BASE_DIR / "data" / "LOGs" / "correcoes_geograficas.csv",
+        index=False
+    )
+
+    print(
+        "Log salvo em: "
+        "logs/correcoes_geograficas.csv"
+    )
 
 # =========================================================
 # EXPORTAÇÃO DO CSV FINAL
